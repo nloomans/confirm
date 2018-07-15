@@ -109,12 +109,25 @@ int main(int argc, char **argv, char **envp)
 	bool is_confirmed = confirm(human_argv, options.default_answer);
 	free(human_argv);
 
-	if (is_confirmed) {
-		execvpe(command_argv[0], command_argv, command_envp);
-	} else {
+	if (!is_confirmed) {
 		abort();
 	}
 
-	printf("errno: %d\n", errno);
+	execvpe(command_argv[0], command_argv, command_envp);
+	
+	// The current program should have been replaced by the users program.
+	// If we are still running, that means something has gone wrong while
+	// executing the users program.
+
+	fprintf(stderr, "%s: ", program_invocation_short_name);
+
+	if (errno == ENOENT) {
+		// "command not found" is way more user friendly then
+		// "No such file or directory"
+		fprintf(stderr, "%s: command not found\n", command_argv[0]);
+	} else {
+		perror(NULL);
+	}
+
 	return errno;
 }
