@@ -21,11 +21,10 @@ struct options {
 };
 
 struct options parse_opts(int argc, char **argv) {
-	int c;
-
-	struct options options;
-	options.default_answer = true;
-	options.should_print_help = false;
+	struct options options = {
+		true,  // default_answer
+		false, // should_print_help
+	};
 
 	static char short_options[] = "+nh";
 	static struct option long_options[] = {
@@ -35,10 +34,8 @@ struct options parse_opts(int argc, char **argv) {
 	};
 
 	while (true) {
-		int option_index = 0;
-
-		c = getopt_long (argc, argv, short_options,
-		                 long_options, &option_index);
+		int c = getopt_long (argc, argv, short_options,
+		                     long_options, NULL);
 
 		// Detect end of the options
 		// This will be after the first non-option, because we
