@@ -31,7 +31,7 @@ int main(int argc, char **argv, char **envp)
 		int option_index = 0;
 
 		c = getopt_long (argc, argv, short_options,
-                       long_options, &option_index);
+		                 long_options, &option_index);
 
 		// Detect end of the options
 		// This will be after the first non-option, because we
