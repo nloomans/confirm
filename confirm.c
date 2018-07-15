@@ -15,40 +15,40 @@ void print_help()
 	printf("usuage: confirm [-n] command\n");
 }
 
-struct options {
+struct program_opts {
 	bool default_answer;
 	bool should_print_help;
 };
 
-struct options parse_opts(int argc, char **argv) {
-	struct options options = {
+struct program_opts parse_opts(int argc, char **argv) {
+	struct program_opts opts = {
 		true,  // default_answer
 		false, // should_print_help
 	};
 
-	static char short_options[] = "+nh";
-	static struct option long_options[] = {
+	static char short_opts[] = "+nh";
+	static struct option long_opts[] = {
 		{"no",   no_argument, 0, 'n'},
 		{"help", no_argument, 0, 'h'},
 		{0, 0, 0, 0},
 	};
 
 	while (true) {
-		int c = getopt_long (argc, argv, short_options,
-		                     long_options, NULL);
+		int c = getopt_long (argc, argv, short_opts,
+		                     long_opts, NULL);
 
-		// Detect end of the options
+		// Detect end of the opts
 		// This will be after the first non-option, because we
-		// specified + in short_options[].
+		// specified + in short_opts[].
 		if (c == -1)
 			break;
 
 		switch (c) {
 		case 'h':
-			options.should_print_help = true;
+			opts.should_print_help = true;
 			break;
 		case 'n':
-			options.default_answer = false;
+			opts.default_answer = false;
 			break;
 		default:
 			// TODO: What should we do here?
@@ -56,7 +56,7 @@ struct options parse_opts(int argc, char **argv) {
 		}
 	}
 
-	return options;
+	return opts;
 }
 
 bool confirm(int command_argc, char **command_argv, bool default_answer) {
@@ -96,9 +96,9 @@ bool confirm(int command_argc, char **command_argv, bool default_answer) {
 
 int main(int argc, char **argv, char **envp)
 {
-	struct options options = parse_opts(argc, argv);
+	struct program_opts opts = parse_opts(argc, argv);
 
-	if (options.should_print_help || argc < 2) {
+	if (opts.should_print_help || argc < 2) {
 		print_help();
 		return 0;
 	}
@@ -108,7 +108,7 @@ int main(int argc, char **argv, char **envp)
 	char **command_envp = envp;
 
 	bool is_confirmed = confirm(command_argc, command_argv,
-	                            options.default_answer);
+	                            opts.default_answer);
 
 	if (!is_confirmed) {
 		abort();
