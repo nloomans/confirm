@@ -62,25 +62,11 @@ struct options parse_opts(int argc, char **argv) {
 	return options;
 }
 
-int main(int argc, char **argv, char **envp)
-{
-	struct options options = parse_opts(argc, argv);
-
-	if (options.should_print_help || argc < 2) {
-		print_help();
-		return 0;
-	}
-
-	int command_argc = argc - optind;
-	char **command_argv = &argv[optind];
-	char **command_envp = envp;
-
-	char *human_argv = join_strings(command_argv, " ", command_argc);
+bool confirm(char* human_argv, bool default_answer) {
 	printf("%s: Are you sure you want to run “%s”? %s ",
 		program_invocation_name, human_argv,
-		options.default_answer ? "[Y/n]" : "[y/N]");
-	free(human_argv);
-
+		default_answer ? "[Y/n]" : "[y/N]");
+	
 	bool answer;
 	char* line = NULL;
 	size_t len = 0;
@@ -95,15 +81,35 @@ int main(int argc, char **argv, char **envp)
 		break;
 	default:
 		if (is_string_all_space(line)) {
-			answer = options.default_answer;
+			answer = default_answer;
 		} else {
 			// The user might have mistyped no
 			answer = false;
 		}
 	}
-	free(line);
 
-	if (answer) {
+	free(line);
+	return answer;
+}
+
+int main(int argc, char **argv, char **envp)
+{
+	struct options options = parse_opts(argc, argv);
+
+	if (options.should_print_help || argc < 2) {
+		print_help();
+		return 0;
+	}
+
+	int command_argc = argc - optind;
+	char **command_argv = &argv[optind];
+	char **command_envp = envp;
+
+	char *human_argv = join_strings(command_argv, " ", command_argc);
+	bool is_confirmed = confirm(human_argv, options.default_answer);
+	free(human_argv);
+
+	if (is_confirmed) {
 		execvpe(command_argv[0], command_argv, command_envp);
 	} else {
 		abort();
