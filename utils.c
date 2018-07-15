@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-char *join_strings(int count, char** strings, char* seperator) {
+char *join_strings(int count, char **strings, char *seperator) {
 	// Calculate total length of joined strings
 	size_t total_length = 0;
 	for (int i = 0; i < count; i++) total_length += strlen(strings[i]);
@@ -10,7 +10,7 @@ char *join_strings(int count, char** strings, char* seperator) {
 	total_length += 1; // For the terminator
 
 	// Allocate memory for joined strings
-	char* str = malloc(total_length);
+	char *str = malloc(total_length);
 
 	// Append all the strings
 	str[0] = '\0'; // Empty string we can append to
@@ -22,7 +22,7 @@ char *join_strings(int count, char** strings, char* seperator) {
 	return str;
 }
 
-bool is_string_all_space(char* string) {
+bool is_string_all_space(char *string) {
 	for (int i = 0; i < strlen(string); i++) {
 		if (!isspace(string[i])) {
 			return false;
