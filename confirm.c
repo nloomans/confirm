@@ -15,14 +15,21 @@ void print_help()
 	printf("usuage: confirm [-n] command\n");
 }
 
-int main(int argc, char **argv, char **envp)
-{
+struct options {
+	bool default_answer;
+	bool should_print_help;
+};
+
+struct options parse_opts(int argc, char **argv) {
 	int c;
-	bool default_answer = true;
+
+	struct options options;
+	options.default_answer = true;
+	options.should_print_help = false;
 
 	static char short_options[] = "+nh";
 	static struct option long_options[] = {
-		{"no", no_argument, 0, 'n'},
+		{"no",   no_argument, 0, 'n'},
 		{"help", no_argument, 0, 'h'},
 		{0, 0, 0, 0},
 	};
@@ -41,17 +48,25 @@ int main(int argc, char **argv, char **envp)
 
 		switch (c) {
 		case 'h':
-			print_help();
-			return 0;
+			options.should_print_help = true;
+			break;
 		case 'n':
-			default_answer = false;
+			options.default_answer = false;
 			break;
 		default:
+			// TODO: What should we do here?
 			abort();
 		}
 	}
 
-	if (argc <= 1) {
+	return options;
+}
+
+int main(int argc, char **argv, char **envp)
+{
+	struct options options = parse_opts(argc, argv);
+
+	if (options.should_print_help || argc < 2) {
 		print_help();
 	} else {
 		int command_argc = argc - optind;
@@ -61,7 +76,7 @@ int main(int argc, char **argv, char **envp)
 		char *human_argv = join_strings(command_argv, " ", command_argc);
 		printf("%s: Are you sure you want to run “%s”? %s ",
 		       program_invocation_name, human_argv,
-		       default_answer ? "[Y/n]" : "[y/N]");
+		       options.default_answer ? "[Y/n]" : "[y/N]");
 		free(human_argv);
 
 		bool answer;
@@ -78,7 +93,7 @@ int main(int argc, char **argv, char **envp)
 			break;
 		default:
 			if (is_string_all_space(line)) {
-				answer = default_answer;
+				answer = options.default_answer;
 			} else {
 				// The user might have mistyped no
 				answer = false;
