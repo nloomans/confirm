@@ -7,8 +7,20 @@
 #include <errno.h>
 #include <unistd.h>
 
+void print_help()
+{
+	printf("%s - confirm if you really wanted to execute a command\n", program_invocation_name);
+	printf("\n");
+	printf("usuage: confirm [-n] command\n");
+}
+
 int main(int argc, char **argv, char **envp)
 {
+	if (argc < 2) {
+		print_help();
+		return 0;
+	}
+
 	int c;
 	bool default_ans = true;
 
@@ -33,10 +45,8 @@ int main(int argc, char **argv, char **envp)
 
 		switch (c) {
 		case 'h':
-			printf("%s - confirm if you really wanted to execute a command\n", argv[0]);
-			printf("\n");
-			printf("usuage: confirm [-n] command\n");
-			exit(0);
+			print_help();
+			return 0;
 		case 'n':
 			default_ans = false;
 			break;
@@ -45,19 +55,9 @@ int main(int argc, char **argv, char **envp)
 		}
 	}
 
-	// for (; optind < argc; optind++) {
-	// 	printf("%d: %s\n", optind, argv[optind]);
-	// }
-
-	// if (optind < argc) {
-	// 	printf("non-option ARGV-elements:\n");
-	// 	printf("\n");
-	// }
-
 	printf("default_ans: %s\n", default_ans ? "yes" : "no");
 	execvpe(argv[optind], &argv[optind], envp);
 	
 	printf("errno: %d\n", errno);
-
 	return errno;
 }
