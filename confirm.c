@@ -68,44 +68,45 @@ int main(int argc, char **argv, char **envp)
 
 	if (options.should_print_help || argc < 2) {
 		print_help();
-	} else {
-		int command_argc = argc - optind;
-		char **command_argv = &argv[optind];
-		char **command_envp = envp;
+		return 0;
+	}
 
-		char *human_argv = join_strings(command_argv, " ", command_argc);
-		printf("%s: Are you sure you want to run “%s”? %s ",
-		       program_invocation_name, human_argv,
-		       options.default_answer ? "[Y/n]" : "[y/N]");
-		free(human_argv);
+	int command_argc = argc - optind;
+	char **command_argv = &argv[optind];
+	char **command_envp = envp;
 
-		bool answer;
-		char* line = NULL;
-		size_t len = 0;
+	char *human_argv = join_strings(command_argv, " ", command_argc);
+	printf("%s: Are you sure you want to run “%s”? %s ",
+		program_invocation_name, human_argv,
+		options.default_answer ? "[Y/n]" : "[y/N]");
+	free(human_argv);
 
-		getline(&line, &len, stdin);
-		switch (rpmatch(line)) {
-		case 1:
-			answer = true;
-			break;
-		case 0:
-			answer = false;
-			break;
-		default:
-			if (is_string_all_space(line)) {
-				answer = options.default_answer;
-			} else {
-				// The user might have mistyped no
-				answer = false;
-			}
-		}
-		free(line);
+	bool answer;
+	char* line = NULL;
+	size_t len = 0;
 
-		if (answer) {
-			execvpe(command_argv[0], command_argv, command_envp);
+	getline(&line, &len, stdin);
+	switch (rpmatch(line)) {
+	case 1:
+		answer = true;
+		break;
+	case 0:
+		answer = false;
+		break;
+	default:
+		if (is_string_all_space(line)) {
+			answer = options.default_answer;
 		} else {
-			abort();
+			// The user might have mistyped no
+			answer = false;
 		}
+	}
+	free(line);
+
+	if (answer) {
+		execvpe(command_argv[0], command_argv, command_envp);
+	} else {
+		abort();
 	}
 
 	printf("errno: %d\n", errno);
