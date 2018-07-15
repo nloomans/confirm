@@ -1,2 +1,2 @@
-confirm: confirm.c
-	gcc -g -o confirm confirm.c -Wall
+%: %.c
+	gcc -g -o $@ $< -Wall -Werror
