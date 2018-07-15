@@ -20,7 +20,7 @@ int main(int argc, char **argv, char **envp)
 	int c;
 	bool default_ans = true;
 
-	static char short_options[] = "+nhabc";
+	static char short_options[] = "+nh";
 	static struct option long_options[] = {
 		{"no", no_argument, 0, 'n'},
 		{"help", no_argument, 0, 'h'},
@@ -46,8 +46,8 @@ int main(int argc, char **argv, char **envp)
 		case 'n':
 			default_ans = false;
 			break;
-		// default:
-		// 	abort();
+		default:
+			abort();
 		}
 	}
 
