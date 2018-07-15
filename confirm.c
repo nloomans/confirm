@@ -62,11 +62,11 @@ struct options parse_opts(int argc, char **argv) {
 	return options;
 }
 
-bool confirm(int command_argc, char* command_argv, bool default_answer) {
+bool confirm(int command_argc, char** command_argv, bool default_answer) {
 	char* line = NULL;
 	char* human_argv = NULL;
 
-	human_argv = join_strings(command_argv, " ", command_argc);
+	human_argv = join_strings(command_argc, command_argv, " ");
 
 	printf("%s: Are you sure you want to run “%s”? %s ",
 		program_invocation_name, human_argv,
