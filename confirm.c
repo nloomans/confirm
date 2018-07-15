@@ -18,7 +18,7 @@ void print_help()
 int main(int argc, char **argv, char **envp)
 {
 	int c;
-	bool default_ans = true;
+	bool default_answer = true;
 
 	static char short_options[] = "+nh";
 	static struct option long_options[] = {
@@ -44,14 +44,12 @@ int main(int argc, char **argv, char **envp)
 			print_help();
 			return 0;
 		case 'n':
-			default_ans = false;
+			default_answer = false;
 			break;
 		default:
 			abort();
 		}
 	}
-
-	printf("default_ans: %s\n", default_ans ? "yes" : "no");
 
 	if (argc <= 1) {
 		print_help();
@@ -61,10 +59,33 @@ int main(int argc, char **argv, char **envp)
 		char **command_envp = envp;
 
 		char *human_argv = join_strings(command_argv, " ", command_argc);
-		printf("%s: Are you sure you want to run “%s”?\n", program_invocation_name, human_argv);
+		printf("%s: Are you sure you want to run “%s”? %s ",
+		       program_invocation_name, human_argv,
+		       default_answer ? "[Y/n]" : "[y/N]");
 		free(human_argv);
 
-		execvpe(command_argv[0], command_argv, command_envp);
+		bool answer;
+		char* line = NULL;
+		size_t len = 0;
+
+		getline(&line, &len, stdin);
+		switch (rpmatch(line)) {
+		case 1:
+			answer = true;
+			break;
+		case 0:
+			answer = false;
+			break;
+		default:
+			answer = default_answer;
+		}
+		free(line);
+
+		if (answer) {
+			execvpe(command_argv[0], command_argv, command_envp);
+		} else {
+			abort();
+		}
 	}
 
 	printf("errno: %d\n", errno);
