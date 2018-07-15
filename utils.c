@@ -1,4 +1,6 @@
 #include <string.h>
+#include <ctype.h>
+#include <stdbool.h>
 
 char *join_strings(char* strings[], char* seperator, int count) {
 	// Calculate total length of joined strings
@@ -18,4 +20,13 @@ char *join_strings(char* strings[], char* seperator, int count) {
 	}
 
 	return str;
+}
+
+bool is_string_all_space(char* string) {
+	for (int i = 0; i < strlen(string); i++) {
+		if (!isspace(string[i])) {
+			return false;
+		}
+	}
+	return true;
 }

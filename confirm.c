@@ -77,7 +77,12 @@ int main(int argc, char **argv, char **envp)
 			answer = false;
 			break;
 		default:
-			answer = default_answer;
+			if (is_string_all_space(line)) {
+				answer = default_answer;
+			} else {
+				// The user might have mistyped no
+				answer = false;
+			}
 		}
 		free(line);
 
