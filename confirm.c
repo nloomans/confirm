@@ -62,13 +62,17 @@ struct options parse_opts(int argc, char **argv) {
 	return options;
 }
 
-bool confirm(char* human_argv, bool default_answer) {
+bool confirm(int command_argc, char* command_argv, bool default_answer) {
+	char* line = NULL;
+	char* human_argv = NULL;
+
+	human_argv = join_strings(command_argv, " ", command_argc);
+
 	printf("%s: Are you sure you want to run “%s”? %s ",
 		program_invocation_name, human_argv,
 		default_answer ? "[Y/n]" : "[y/N]");
 	
 	bool answer;
-	char* line = NULL;
 	size_t len = 0;
 
 	getline(&line, &len, stdin);
@@ -89,6 +93,7 @@ bool confirm(char* human_argv, bool default_answer) {
 	}
 
 	free(line);
+	free(human_argv);
 	return answer;
 }
 
@@ -105,9 +110,8 @@ int main(int argc, char **argv, char **envp)
 	char **command_argv = &argv[optind];
 	char **command_envp = envp;
 
-	char *human_argv = join_strings(command_argv, " ", command_argc);
-	bool is_confirmed = confirm(human_argv, options.default_answer);
-	free(human_argv);
+	bool is_confirmed = confirm(command_argc, command_argv,
+	                            options.default_answer);
 
 	if (!is_confirmed) {
 		abort();
