@@ -120,14 +120,13 @@ int main(int argc, char **argv, char **envp)
 	// If we are still running, that means something has gone wrong while
 	// executing the users program.
 
-	fprintf(stderr, "%s: ", program_invocation_short_name);
-
 	if (errno == ENOENT) {
 		// "command not found" is way more user friendly then
 		// "No such file or directory"
-		fprintf(stderr, "%s: command not found\n", command_argv[0]);
+		fprintf(stderr, "%s: %s: command not found\n",
+		        program_invocation_short_name, command_argv[0]);
 	} else {
-		perror(NULL);
+		perror(program_invocation_short_name);
 	}
 
 	return errno;
