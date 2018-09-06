@@ -26,8 +26,8 @@ struct program_opts parse_opts(int argc, char **argv) {
 		false, // should_print_help
 	};
 
-	static char short_opts[] = "+nh";
-	static struct option long_opts[] = {
+	char short_opts[] = "+nh";
+	struct option long_opts[] = {
 		{"no",   no_argument, 0, 'n'},
 		{"help", no_argument, 0, 'h'},
 		{0, 0, 0, 0},
