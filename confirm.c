@@ -34,8 +34,8 @@ struct program_opts parse_opts(int argc, char **argv) {
 	};
 
 	while (true) {
-		int c = getopt_long (argc, argv, short_opts,
-		                     long_opts, NULL);
+		int c = getopt_long(argc, argv, short_opts,
+		                    long_opts, NULL);
 
 		// Detect end of the opts
 		// This will be after the first non-option, because we
